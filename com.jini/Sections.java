@@ -47,7 +47,7 @@ public class Sections implements Iterable<Section> {
      * @param file The configuration file
      * @param handleQuotes Determines whether enclosing single and double quotation marks should be part of the parsed data.
      *                     If {@code true}, all enclosing quotation marks will be removed. However, if there are no quotation marks,
-     *                     the data is still processed correctly. If {@code false}, the processing time is drastically reduced.
+     *                     the data will still be processed correctly. If {@code false}, processing time will drastically decrease.
      * @throws IOException If an error occurs while reading the configuration file
      */
     public Sections(File file, boolean handleQuotes) throws IOException {
@@ -120,6 +120,7 @@ public class Sections implements Iterable<Section> {
         int read;
 
         while ((read = fileInputStream.read(buffer)) >= 0) {
+
             byteArrayOutputStream.write(buffer, 0, read);
         }
 
