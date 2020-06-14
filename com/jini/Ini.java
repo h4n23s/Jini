@@ -23,22 +23,22 @@ import java.util.regex.Pattern;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Sections implements Iterable<Section> {
+public class Ini {
 
     private final Map<String, Section> configurations;
 
     /**
-     * @see Sections(java.io.File, boolean)
+     * @see Ini (java.io.File, boolean)
      */
-    public Sections(String pathname) throws IOException {
+    public Ini(String pathname) throws IOException {
 
         this(new File(pathname));
     }
 
     /**
-     * @see Sections(java.io.File, boolean)
+     * @see Ini (java.io.File, boolean)
      */
-    public Sections(File file) throws IOException {
+    public Ini(File file) throws IOException {
 
         this(file, false);
     }
@@ -52,7 +52,7 @@ public class Sections implements Iterable<Section> {
      *                     the data will still be processed correctly. If {@code false}, processing time will drastically decrease.
      * @throws IOException If an error occurs while reading the configuration file
      */
-    public Sections(File file, boolean handleQuotes) throws IOException {
+    public Ini(File file, boolean handleQuotes) throws IOException {
 
         configurations = new HashMap<>();
 
@@ -113,6 +113,11 @@ public class Sections implements Iterable<Section> {
         return configurations.get(name);
     }
 
+    public Collection<Section> sections() {
+
+        return configurations.values();
+    }
+
     private String read(File file) throws IOException {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -131,21 +136,15 @@ public class Sections implements Iterable<Section> {
     }
 
     @Override
-    public Iterator<Section> iterator() {
-
-        return configurations.values().iterator();
-    }
-
-    @Override
     public String toString() {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        for(Section section : configurations.values()) {
+        for(Section section : this.sections()) {
 
             stringBuilder.append("[").append(section).append("]\n");
 
-            for(String key : section) {
+            for(String key : section.keys()) {
 
                 stringBuilder.append(key).append("=").append(section.value(key)).append("\n");
             }

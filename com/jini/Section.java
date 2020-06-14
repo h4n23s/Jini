@@ -1,7 +1,6 @@
 package jini;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -19,7 +18,7 @@ import java.util.Map;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Section implements Iterable<String> {
+public class Section {
 
     private final String name;
     private final Map<String, String> valuePairs;
@@ -49,12 +48,6 @@ public class Section implements Iterable<String> {
     public Collection<String> keys() {
 
         return valuePairs.keySet();
-    }
-
-    @Override
-    public Iterator<String> iterator() {
-
-        return valuePairs.keySet().iterator();
     }
 
     @Override
