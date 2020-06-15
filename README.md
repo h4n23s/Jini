@@ -6,7 +6,7 @@
 
 #### Examples
 
-```
+```java
 public static void main(String[] args) throws IOException {
 
     Ini ini = new Ini(new File("test.ini"), true);
