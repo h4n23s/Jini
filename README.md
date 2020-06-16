@@ -29,7 +29,10 @@ public static void main(String[] args) throws IOException {
     String value1 = section1.value("key1");
     
     // You can also define a default value in case the specified key does not exist
-    String value2 = section1.value("key2", "Default value"); 
+    String value2 = section1.value("key2", "Default value");
+
+    // If there are no sections in a configuration file, you can still retrieve the keys
+    Collection<String> ungroupedKeys = ini.section("").keys();
 
 }
 ```
@@ -51,9 +54,10 @@ key2=value2
 [section3]
 key1    = "value1"
 key2="value2"
+key3=   'value3'
 ```
 
-Formatted output using ``ini.toString()``:
+Formatted output using ``ini.toString()`` and when ``handleQuotes`` is true:
 ```ini
 [section1]
 key1=value1
@@ -66,4 +70,5 @@ key2=value2
 [section3]
 key1=value1
 key2=value2
+key3=value3
 ```

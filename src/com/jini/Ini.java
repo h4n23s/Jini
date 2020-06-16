@@ -83,7 +83,7 @@ public class Ini {
             }
         }
 
-        String keyRegex = (handleQuotes) ? "^\\s*(.+?)\\s*=\\s*[\"|']?(.*?)[\"|']?\\s*$" : "^\\s*(.+?)\\s*=\\s*(.*?)\\s*$";
+        String keyRegex = handleQuotes ? "^\\s*(.+?)\\s*=\\s*[\"|']?(.*?)[\"|']?\\s*$" : "^\\s*(.+?)\\s*=\\s*(.*?)\\s*$";
 
         // Parse keys and values
         for(String section : sections) {
@@ -96,7 +96,10 @@ public class Ini {
                 keyValues.put(matcher.group(1), matcher.group(2));
             }
 
-            String sectionName = section.substring(section.indexOf("[") + 1, section.indexOf("]"));
+            int startSection = section.indexOf("[");
+            int endSection = section.indexOf("]");
+
+            String sectionName = (startSection != -1) ? section.substring(startSection + 1, endSection) : "";
             configurations.put(sectionName, new Section(sectionName, keyValues));
 
         }
