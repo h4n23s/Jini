@@ -55,6 +55,8 @@ key2=value2
 key1    = "value1"
 key2="value2"
 key3=   'value3'
+# key4=value4
+  # key5=value5
 ```
 
 Formatted output using ``ini.toString()`` and when ``handleQuotes`` is true:

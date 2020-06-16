@@ -57,7 +57,7 @@ public class Ini {
 
         configurations = new HashMap<>();
 
-        String[] lines = read(file).split("(?=\\R)");
+        String[] lines = read(file).split("(\\r\\n|\\r|\\n)");
 
         List<String> sections = new ArrayList<>();
         StringBuilder sectionContent = new StringBuilder();
@@ -70,16 +70,19 @@ public class Ini {
             if(sectionContent.length() != 0 && line.matches("^\\s*\\[.+?].*?$")) {
 
                 sections.add(sectionContent.toString());
-                sectionContent = new StringBuilder(line);
+                sectionContent = new StringBuilder(line).append("\n");
+                continue;
 
-            } else if(linesRead == (lines.length - 1)) {
+            }
 
-                sectionContent.append(line);
+            if(!line.matches("^\\s*#.*")) {
+
+                sectionContent.append(line).append("\n");
+            }
+
+            if(linesRead == (lines.length - 1)) {
+
                 sections.add(sectionContent.toString());
-
-            } else {
-
-                sectionContent.append(line);
             }
         }
 
