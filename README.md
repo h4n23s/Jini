@@ -1,6 +1,11 @@
 ## Jini
 
-**Jini** (short for _``Java ini``_) is a simple, flexible and lightweight configuration file parser (``.ini``) that's compatible with Java 7 and higher.
+![Minimum language level](https://img.shields.io/badge/java-7%2B-informational)
+![Total code size](https://img.shields.io/github/languages/code-size/h4n23s/Jini)
+![Latest release](https://img.shields.io/github/v/release/h4n23s/Jini)
+![License](https://img.shields.io/github/license/h4n23s/Jini)
+
+**Jini** (short for _``Java ini``_) is a simple, flexible and lightweight configuration file parser (``.ini``).
 
 ![UML diagram](assets/uml-full.png)
 
@@ -60,6 +65,7 @@ key3=   'value3'
 ```
 
 Formatted output using ``ini.toString()`` and when ``handleQuotes`` is true:
+
 ```ini
 [section1]
 key1=value1
