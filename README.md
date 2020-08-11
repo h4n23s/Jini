@@ -9,8 +9,55 @@
 
 ![UML diagram](assets/uml-full.png)
 
-#### Examples
+#### Usage
 
+Add our dependency to your project:
+
+<table>
+  <tr>
+    <th>Maven</th>
+    <th>Gradle</th>
+  </tr>
+  <tr>
+  <td>
+    
+```xml
+<dependencies>
+    <dependency>
+        <groupId>eu.hgweb</groupId>
+        <artifactId>jini</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+</dependencies>
+
+<repositories>
+    <repository>
+        <id>hgweb-maven</id>
+        <url>https://maven.hgweb.eu/releases</url>
+    </repository>
+</repositories>
+```
+   
+   </td>
+   <td>
+   
+```groovy
+repositories {
+    maven {
+        url 'https://maven.hgweb.eu/releases'
+    }
+}
+
+dependencies {
+    implementation 'eu.hgweb:jini:1.0.0'
+}
+```
+   
+   </td>
+  </tr>
+</table>
+
+##### Examples
 ```java
 public static void main(String[] args) throws IOException {
 
@@ -65,7 +112,6 @@ key3=   'value3'
 ```
 
 Formatted output using ``ini.toString()`` and when ``handleQuotes`` is true:
-
 ```ini
 [section1]
 key1=value1
