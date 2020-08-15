@@ -62,14 +62,14 @@ dependencies {
 public static void main(String[] args) throws IOException {
 
     Ini ini = new Ini(new File("test.ini"), true);
-    
+
     // This can be used to verify parsed data, but also to get a
     // formatted version of the original .ini file, as you can see down below.
     System.out.println(ini);
 
     for(Section section : ini.sections()) {
 
-        System.out.println("Section name: " + section);
+        System.out.println("Section name: " + section.name());
 
         for(String key : section.keys()) {
 
@@ -77,12 +77,20 @@ public static void main(String[] args) throws IOException {
         }
     }
 
-    Section section1 = ini.section("section1");
-    String value1 = section1.value("key1");
-    
-    // You can also define a default value in case the specified key does not exist
-    String value2 = section1.value("key2", "Default value");
+    if(ini.sectionExists("section1")) {
 
+        Section section1 = ini.section("section1");
+
+        if(section1.keyExists("key1")) {
+
+            String value1 = section1.value("key1");
+        }
+
+        // You can also define a default value in case the specified key does not exist
+        String value2 = section1.value("key2", "Default value");
+        
+    }
+    
     // If there are no sections in a configuration file, you can still retrieve the keys
     Collection<String> ungroupedKeys = ini.section("").keys();
 

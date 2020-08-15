@@ -17,6 +17,7 @@ import java.util.Map;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 public class Section {
 
@@ -48,6 +49,21 @@ public class Section {
     public Collection<String> keys() {
 
         return valuePairs.keySet();
+    }
+
+    public String name() {
+
+        return name;
+    }
+
+    public boolean keyExists(String key) {
+
+        return valuePairs.containsKey(key);
+    }
+
+    public boolean valueExists(String value) {
+
+        return valuePairs.containsValue(value);
     }
 
     @Override

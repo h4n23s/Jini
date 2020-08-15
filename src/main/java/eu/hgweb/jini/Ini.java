@@ -1,9 +1,6 @@
 package eu.hgweb.jini;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,41 +19,58 @@ import java.util.regex.Pattern;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 public class Ini {
 
     private final Map<String, Section> configurations;
 
     /**
-     * @see Ini (java.io.File, boolean)
+     * @see Ini (java.io.InputStream, boolean)
      */
     public Ini(String pathname) throws IOException {
 
-        this(new File(pathname));
+        this(new File(pathname), true);
     }
 
     /**
-     * @see Ini (java.io.File, boolean)
+     * @see Ini (java.io.InputStream, boolean)
+     */
+    public Ini(String pathname, boolean handleQuotes) throws IOException {
+
+        this(new File(pathname), handleQuotes);
+    }
+
+    /**
+     * @see Ini (java.io.InputStream, boolean)
      */
     public Ini(File file) throws IOException {
 
-        this(file, false);
+        this(new FileInputStream(file), true);
+    }
+
+    /**
+     * @see Ini (java.io.InputStream, boolean)
+     */
+    public Ini(File file, boolean handleQuotes) throws IOException {
+
+        this(new FileInputStream(file), handleQuotes);
     }
 
     /**
      * Reads all sections and key-value pairs from a given file and stores them in a map.
      *
-     * @param file The configuration file
+     * @param inputStream The configuration input stream
      * @param handleQuotes Determines whether enclosing single and double quotation marks should be part of the parsed data.
      *                     If {@code true}, all enclosing quotation marks will be removed. However, if there are no quotation marks,
      *                     the data will still be processed correctly. If {@code false}, processing time will drastically decrease.
      * @throws IOException If an error occurs while reading the configuration file
      */
-    public Ini(File file, boolean handleQuotes) throws IOException {
+    public Ini(InputStream inputStream, boolean handleQuotes) throws IOException {
 
         configurations = new HashMap<>();
 
-        String[] lines = read(file).split("(\\r\\n|\\r|\\n)");
+        String[] lines = read(inputStream).split("(\\r\\n|\\r|\\n)");
 
         List<String> sections = new ArrayList<>();
         StringBuilder sectionContent = new StringBuilder();
@@ -119,20 +133,24 @@ public class Ini {
         return configurations.get(name);
     }
 
+    public boolean sectionExists(String name) {
+
+        return configurations.containsKey(name);
+    }
+
     public Collection<Section> sections() {
 
         return configurations.values();
     }
 
-    private String read(File file) throws IOException {
+    private String read(InputStream inputStream) throws IOException {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        FileInputStream fileInputStream = new FileInputStream(file);
 
         byte[] buffer = new byte[1024];
         int read;
 
-        while ((read = fileInputStream.read(buffer)) >= 0) {
+        while ((read = inputStream.read(buffer)) >= 0) {
 
             byteArrayOutputStream.write(buffer, 0, read);
         }
@@ -152,7 +170,7 @@ public class Ini {
 
             for(String key : section.keys()) {
 
-                stringBuilder.append(key).append("=").append(section.value(key)).append("\n");
+                stringBuilder.append(key).append("=\"").append(section.value(key)).append("\"\n");
             }
 
             stringBuilder.append("\n");
