@@ -1,0 +1,21 @@
+name: Testing CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setting up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 13
+    - name: Testing
+      run: mvn test
