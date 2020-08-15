@@ -24,7 +24,7 @@ Add our dependency to your project:
     <dependency>
         <groupId>eu.hgweb</groupId>
         <artifactId>jini</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </dependency>
 </dependencies>
 
@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'eu.hgweb:jini:1.0.0'
+    implementation 'eu.hgweb:jini:1.0.1'
 }
 ```
    
