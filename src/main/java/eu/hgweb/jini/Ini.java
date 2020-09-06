@@ -88,7 +88,7 @@ public class Ini {
 
             }
 
-            if(!line.matches("^\\s*#.*")) {
+            if(!line.trim().isEmpty() && !line.matches("^ *?[#|;].*?")) {
 
                 sectionContent.append(line).append("\n");
             }
