@@ -20,34 +20,34 @@ Add our dependency to your project:
   <td>
     
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>eu.hgweb</groupId>
-        <artifactId>jini</artifactId>
-        <version>1.0.2</version>
-    </dependency>
-</dependencies>
-
 <repositories>
     <repository>
-        <id>hgweb-maven</id>
-        <url>https://maven.hgweb.eu/releases</url>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
     </repository>
 </repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.h4n23s</groupId>
+        <artifactId>Jini</artifactId>
+        <version>1.0.3</version>
+    </dependency>
+</dependencies>
 ```
    
    </td>
    <td>
    
 ```groovy
-repositories {
-    maven {
-        url 'https://maven.hgweb.eu/releases'
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
     }
 }
 
 dependencies {
-    implementation 'eu.hgweb:jini:1.0.2'
+    implementation 'com.github.h4n23s:Jini:1.0.3'
 }
 ```
    
@@ -70,7 +70,6 @@ public static void main(String[] args) throws IOException {
         System.out.println("Section name: " + section.name());
 
         for(String key : section.keys()) {
-
             System.out.println(key + " = " + section.value(key));
         }
     }
@@ -80,7 +79,6 @@ public static void main(String[] args) throws IOException {
         Section section1 = ini.section("section1");
 
         if(section1.keyExists("key1")) {
-
             String value1 = section1.value("key1");
         }
 
