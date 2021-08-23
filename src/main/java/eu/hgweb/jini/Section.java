@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /*
- * Copyright 2020 Hannes Gehrold
+ * Copyright 2021 Hannes Gehrold
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,51 +25,40 @@ public class Section {
     private final Map<String, String> valuePairs;
 
     protected Section(String name, Map<String, String> valuePairs) {
-
         this.name = name;
         this.valuePairs = valuePairs;
-
     }
 
     public String value(String key) {
-
         return valuePairs.get(key);
     }
 
     public Collection<String> values() {
-
         return valuePairs.values();
     }
 
     public String value(String key, String defaultValue) {
-
         return valuePairs.containsKey(key) ? valuePairs.get(key) : defaultValue;
     }
 
     public Collection<String> keys() {
-
         return valuePairs.keySet();
     }
 
     public String name() {
-
         return name;
     }
 
     public boolean keyExists(String key) {
-
         return valuePairs.containsKey(key);
     }
 
     public boolean valueExists(String value) {
-
         return valuePairs.containsValue(value);
     }
 
     @Override
     public String toString() {
-
         return name;
     }
-
 }

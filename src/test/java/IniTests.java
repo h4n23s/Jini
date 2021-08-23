@@ -1,9 +1,9 @@
 import eu.hgweb.jini.Ini;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +27,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  */
 public class IniTests {
+
+    @Test
+    public void testHotReload() throws IOException {
+
+        File temp = Files.createTempFile(null, null).toFile();
+
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(("[section1]\n" +
+                    "test1=test1\n" +
+                    "[section2]\n" +
+                    "test2=test2").getBytes(StandardCharsets.UTF_8));
+
+            FileOutputStream fos = new FileOutputStream(temp);
+            byteArrayInputStream.transferTo(fos);
+            fos.flush();
+            fos.close();
+        }
+
+        Ini ini = new Ini(temp);
+        assertEquals("test1", ini.section("section1").value("test1"));
+        assertEquals("test2", ini.section("section2").value("test2"));
+
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(("[section3]\n" +
+                    "test3=test3\n" +
+                    "[section4]\n" +
+                    "test4=test4").getBytes(StandardCharsets.UTF_8));
+
+            FileOutputStream fos = new FileOutputStream(temp);
+            byteArrayInputStream.transferTo(fos);
+            fos.flush();
+            fos.close();
+        }
+
+        ini.hotReload();
+        assertEquals("test3", ini.section("section3").value("test3"));
+        assertEquals("test4", ini.section("section4").value("test4"));
+
+        temp.deleteOnExit();
+
+    }
 
     @Test
     public void testSections() throws IOException {

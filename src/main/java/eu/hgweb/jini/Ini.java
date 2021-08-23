@@ -1,12 +1,14 @@
 package eu.hgweb.jini;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
- * Copyright 2020 Hannes Gehrold
+ * Copyright 2021 Hannes Gehrold
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +25,15 @@ import java.util.regex.Pattern;
  */
 public class Ini {
 
-    private final Map<String, Section> configurations;
+    private final Reader reader;
+    private final boolean handleQuotes;
+
+    private Map<String, Section> configurations;
 
     /**
      * @see Ini (java.io.InputStream, boolean)
      */
     public Ini(String pathname) throws IOException {
-
         this(new File(pathname), true);
     }
 
@@ -37,7 +41,6 @@ public class Ini {
      * @see Ini (java.io.InputStream, boolean)
      */
     public Ini(String pathname, boolean handleQuotes) throws IOException {
-
         this(new File(pathname), handleQuotes);
     }
 
@@ -45,32 +48,58 @@ public class Ini {
      * @see Ini (java.io.InputStream, boolean)
      */
     public Ini(File file) throws IOException {
+        this(new ResettableFileReader(file, StandardCharsets.UTF_8), true);
+    }
 
-        this(new FileInputStream(file), true);
+    /**
+     * @see Ini (java.io.InputStream, boolean)
+     */
+    public Ini(File file, Charset charset) throws IOException {
+        this(new ResettableFileReader(file, charset), true);
     }
 
     /**
      * @see Ini (java.io.InputStream, boolean)
      */
     public Ini(File file, boolean handleQuotes) throws IOException {
+        this(new ResettableFileReader(file, StandardCharsets.UTF_8), handleQuotes);
+    }
 
-        this(new FileInputStream(file), handleQuotes);
+    /**
+     * @see Ini (java.io.InputStream, boolean)
+     */
+    public Ini(File file, Charset charset, boolean handleQuotes) throws IOException {
+        this(new ResettableFileReader(file, charset), handleQuotes);
+    }
+
+    /**
+     * @see Ini (java.io.InputStream, boolean)
+     */
+    public Ini(InputStream inputStream, boolean handleQuotes) throws IOException {
+        this(new InputStreamReader(inputStream), handleQuotes);
     }
 
     /**
      * Reads all sections and key-value pairs from a given file and stores them in a map.
      *
-     * @param inputStream The configuration input stream
+     * @param reader Reader used to
      * @param handleQuotes Determines whether enclosing single and double quotation marks should be part of the parsed data.
      *                     If {@code true}, all enclosing quotation marks will be removed. However, if there are no quotation marks,
      *                     the data will still be processed correctly. If {@code false}, processing time will drastically decrease.
      * @throws IOException If an error occurs while reading the configuration file
      */
-    public Ini(InputStream inputStream, boolean handleQuotes) throws IOException {
+    public Ini(Reader reader, boolean handleQuotes) throws IOException {
+        this.reader = reader;
+        this.handleQuotes = handleQuotes;
+
+        parseInternally();
+    }
+
+    private synchronized void parseInternally() throws IOException {
 
         configurations = new HashMap<>();
 
-        String[] lines = read(inputStream).split("(\\r\\n|\\r|\\n)");
+        String[] lines = toLines(reader);
 
         List<String> sections = new ArrayList<>();
         StringBuilder sectionContent = new StringBuilder();
@@ -81,20 +110,16 @@ public class Ini {
             String line = lines[linesRead];
 
             if(sectionContent.length() != 0 && line.matches("^\\s*\\[.+?].*?$")) {
-
                 sections.add(sectionContent.toString());
                 sectionContent = new StringBuilder(line).append("\n");
                 continue;
-
             }
 
             if(!line.trim().isEmpty() && !line.matches("^ *?[#|;].*?")) {
-
                 sectionContent.append(line).append("\n");
             }
 
             if(linesRead == (lines.length - 1)) {
-
                 sections.add(sectionContent.toString());
             }
         }
@@ -108,7 +133,6 @@ public class Ini {
             Matcher matcher = Pattern.compile(keyRegex, Pattern.MULTILINE).matcher(section);
 
             while (matcher.find()) {
-
                 keyValues.put(matcher.group(1), matcher.group(2));
             }
 
@@ -117,9 +141,21 @@ public class Ini {
 
             String sectionName = (startSection != -1) ? section.substring(startSection + 1, endSection) : "";
             configurations.put(sectionName, new Section(sectionName, keyValues));
+        }
+    }
 
+    public void hotReload() {
+        try {
+            reader.reset();
+        } catch (IOException e) {
+            throw new IllegalStateException("Hot reload not supported by stream.", e);
         }
 
+        try {
+            parseInternally();
+        } catch (Exception e) {
+            throw new IllegalStateException("Hot reload failed with an exception.", e);
+        }
     }
 
     /**
@@ -129,47 +165,38 @@ public class Ini {
      * @return A selection of key-value pairs
      */
     public Section section(String name) {
-
         return configurations.get(name);
     }
 
     public boolean sectionExists(String name) {
-
         return configurations.containsKey(name);
     }
 
     public Collection<Section> sections() {
-
         return configurations.values();
     }
 
-    private String read(InputStream inputStream) throws IOException {
+    private String[] toLines(Reader reader) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(reader);
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        List<String> lines = new LinkedList<>();
+        String line;
 
-        byte[] buffer = new byte[1024];
-        int read;
-
-        while ((read = inputStream.read(buffer)) >= 0) {
-
-            byteArrayOutputStream.write(buffer, 0, read);
+        while((line = bufferedReader.readLine()) != null) {
+            lines.add(line);
         }
 
-        return new String(byteArrayOutputStream.toByteArray());
-
+        return lines.toArray(new String[0]);
     }
 
     @Override
     public String toString() {
-
         StringBuilder stringBuilder = new StringBuilder();
 
         for(Section section : this.sections()) {
-
             stringBuilder.append("[").append(section).append("]\n");
 
             for(String key : section.keys()) {
-
                 stringBuilder.append(key).append("=\"").append(section.value(key)).append("\"\n");
             }
 
@@ -177,7 +204,5 @@ public class Ini {
         }
 
         return stringBuilder.toString();
-
     }
-
 }
